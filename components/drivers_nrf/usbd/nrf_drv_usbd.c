@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 #include "sdk_config.h"
 #if USBD_ENABLED
@@ -549,50 +521,15 @@ static bool usbd_next_transfer_safe_call(usbd_drv_ep_state_t * p_state)
 }
 
 /**
- * @name Auxiliary functions for global interrupt state
+ * @brief Force the USBD interrupt into pending state
  *
- * This functions are manipulating interrupt state on NVIC level.
- * In the target USBD API there would be only one interrupt.
- * So for RawIP we can only enable all interrupts or disable them.
- * @{
+ * This function is used to force USBD interrupt to be processed right now.
+ * It makes it possible to process all EasyDMA access on one thread priority level.
  */
-
-    /**
-     * Enable USBD interrupt
-     */
-    static inline void usbd_int_enable(void)
-    {
-        NVIC_EnableIRQ(USBD_IRQn);
-    }
-
-    /**
-     * Disable USBD interrupt
-     */
-    static inline void usbd_int_disable(void)
-    {
-        NVIC_DisableIRQ(USBD_IRQn);
-    }
-
-    /**
-     * Get current USBD interrupt state
-     */
-    static inline bool usbd_int_state(void)
-    {
-        return nrf_drv_common_irq_enable_check(USBD_IRQn);
-    }
-
-    /**
-     * @brief Force the USBD interrupt into pending state
-     *
-     * This function is used to force USBD interrupt to be processed right now.
-     * It makes it possible to process all EasyDMA access on one thread priority level.
-     */
-    static inline void usbd_int_rise(void)
-    {
-        NVIC_SetPendingIRQ(USBD_IRQn);
-    }
-
-/** @} */
+static inline void usbd_int_rise(void)
+{
+    NVIC_SetPendingIRQ(USBD_IRQn);
+}
 
 /**
  * @name USBD interrupt runtimes
@@ -1295,7 +1232,7 @@ void USBD_IRQHandler(void)
             uint8_t rb;
             if(usbi & 0x01)
             {
-                active |= USBD_INTEN_EP0SETUP_Msk;;
+                active |= USBD_INTEN_EP0SETUP_Msk;
             }
             if(usbi & 0x10)
             {
@@ -1473,7 +1410,7 @@ void nrf_drv_usbd_start(bool enable_sof)
    nrf_usbd_int_enable(ints_to_enable);
 
    /* Enable interrupt globally */
-   usbd_int_enable();
+   nrf_drv_common_irq_enable(USBD_IRQn, USBD_CONFIG_IRQ_PRIORITY);
 
    /* Enable pullups */
    nrf_usbd_pullup_enable();
@@ -1490,7 +1427,7 @@ void nrf_drv_usbd_stop(void)
     nrf_usbd_pullup_disable();
 
     /* Disable interrupt globally */
-    usbd_int_disable();
+    nrf_drv_common_irq_disable(USBD_IRQn);
 }
 
 bool nrf_drv_usbd_is_initialized(void)
@@ -1505,7 +1442,7 @@ bool nrf_drv_usbd_is_enabled(void)
 
 bool nrf_drv_usbd_is_started(void)
 {
-    return (nrf_drv_usbd_is_enabled() && usbd_int_state());
+    return (nrf_drv_usbd_is_enabled() && nrf_drv_common_irq_enable_check(USBD_IRQn));
 }
 
 void nrf_drv_usbd_ep_max_packet_size_set(nrf_drv_usbd_ep_t ep, uint16_t size)

@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 #ifndef APP_USBD_CDC_DESC_H__
 #define APP_USBD_CDC_DESC_H__
@@ -60,12 +32,12 @@ extern "C" {
  */
 
 /**
- * @brief Initializer of IAD descriptor for CDC class
+ * @brief Initializer of IAD descriptor for CDC class.
  *
- * @param interface_number Interface number
- * @param subclass         Subclass, @ref app_usbd_cdc_subclass_t
- * @param protocol         Protocol, @ref app_usbd_cdc_comm_protocol_t
- * */
+ * @param interface_number Interface number.
+ * @param subclass         Subclass, @ref app_usbd_cdc_subclass_t.
+ * @param protocol         Protocol, @ref app_usbd_cdc_comm_protocol_t.
+ */
 #define APP_USBD_CDC_IAD_DSC(interface_number, subclass, protocol)        \
     /*.bLength =           */ sizeof(app_usbd_descriptor_iad_t),          \
     /*.bDescriptorType =   */ APP_USBD_DESCRIPTOR_INTERFACE_ASSOCIATION,  \
@@ -77,12 +49,12 @@ extern "C" {
     /*.iFunction =         */ 0,                                          \
 
 /**
- * @brief Initializer of interface descriptor for CDC COMM class
+ * @brief Initializer of interface descriptor for CDC COMM class.
  *
- * @param interface_number Interface number
- * @param subclass         Subclass, @ref app_usbd_cdc_subclass_t
- * @param protocol         Protocol, @ref app_usbd_cdc_comm_protocol_t
- * */
+ * @param interface_number Interface number.
+ * @param subclass         Subclass, @ref app_usbd_cdc_subclass_t.
+ * @param protocol         Protocol, @ref app_usbd_cdc_comm_protocol_t.
+ */
 #define APP_USBD_CDC_COMM_INTERFACE_DSC(interface_number, subclass, protocol)  \
     /*.bLength =            */ sizeof(app_usbd_descriptor_iface_t),            \
     /*.bDescriptorType =    */ APP_USBD_DESCRIPTOR_INTERFACE,                  \
@@ -96,12 +68,12 @@ extern "C" {
 
 
 /**
- * @brief Initializer of interface descriptor for CDC DATA class
+ * @brief Initializer of interface descriptor for CDC DATA class.
  *
- * @param interface_number Interface number
- * @param subclass         Subclass, @ref app_usbd_cdc_subclass_t
- * @param protocol         Protocol, @ref app_usbd_cdc_data_protocol_t
- * */
+ * @param interface_number Interface number.
+ * @param subclass         Subclass, @ref app_usbd_cdc_subclass_t.
+ * @param protocol         Protocol, @ref app_usbd_cdc_data_protocol_t.
+ */
 #define APP_USBD_CDC_DATA_INTERFACE_DSC(interface_number, subclass, protocol) \
     /*.bLength =            */ sizeof(app_usbd_descriptor_iface_t),           \
     /*.bDescriptorType =    */ APP_USBD_DESCRIPTOR_INTERFACE,                 \
@@ -116,11 +88,11 @@ extern "C" {
 
 
 /**
- * @brief Initializer of endpoint descriptor for CDC COM class
+ * @brief Initializer of endpoint descriptor for CDC COM class.
  *
- * @param endpoint_in   IN endpoint
- * @param ep_size       Endpoint size
- * */
+ * @param endpoint_in   IN endpoint.
+ * @param ep_size       Endpoint size.
+ */
 #define APP_USBD_CDC_COM_EP_DSC(endpoint_in, ep_size)                     \
     /*.bLength =          */ sizeof(app_usbd_descriptor_ep_t),            \
     /*.bDescriptorType =  */ APP_USBD_DESCRIPTOR_ENDPOINT,                \
@@ -130,12 +102,12 @@ extern "C" {
     /*.bInterval =        */ 16,                                          \
 
 /**
- * @brief Initializer of endpoint descriptors for CDC DATA class
+ * @brief Initializer of endpoint descriptors for CDC DATA class.
  *
- * @param endpoint_in   IN endpoint
- * @param endpoint_out  OUT endpoint
- * @param ep_size       Endpoint size
- * */
+ * @param endpoint_in   IN endpoint.
+ * @param endpoint_out  OUT endpoint.
+ * @param ep_size       Endpoint size.
+ */
 #define APP_USBD_CDC_DATA_EP_DSC(endpoint_in, endpoint_out, ep_size) \
     /*.bLength =          */ sizeof(app_usbd_descriptor_ep_t),       \
     /*.bDescriptorType =  */ APP_USBD_DESCRIPTOR_ENDPOINT,           \
@@ -151,9 +123,9 @@ extern "C" {
     /*.bInterval =        */ 0,                                      \
 
 /**
- * @brief Initializer of endpoint descriptors for CDC header descriptor
+ * @brief Initializer of endpoint descriptors for CDC header descriptor.
  *
- * @param bcd_cdc   BCD CDC version
+ * @param bcd_cdc   BCD CDC version.
  */
 #define APP_USBD_CDC_HEADER_DSC(bcd_cdc)                           \
     /*.bLength =            */ sizeof(app_usbd_cdc_desc_header_t), \
@@ -162,10 +134,10 @@ extern "C" {
     /*.bcdCDC =             */ APP_USBD_U16_TO_RAW_DSC(bcd_cdc),   \
 
 /**
- * @brief Initializer of endpoint descriptors for CDC call management descriptor
+ * @brief Initializer of endpoint descriptors for CDC call management descriptor.
  *
- * @param capabilities   Capabilities
- * @param data_interface Data interface
+ * @param capabilities   Capabilities.
+ * @param data_interface Data interface.
  */
 #define APP_USBD_CDC_CALL_MGMT_DSC(capabilities, data_interface)      \
     /*.bLength =            */ sizeof(app_usbd_cdc_desc_call_mgmt_t), \
@@ -176,9 +148,9 @@ extern "C" {
 
 
 /**
- * @brief Initializer of endpoint descriptors for CDC DATA class
+ * @brief Initializer of endpoint descriptors for CDC DATA class.
  *
- * @param capabilities   Capabilities
+ * @param capabilities   Capabilities.
  */
 #define APP_USBD_CDC_ACM_DSC(capabilities)                      \
     /*.bLength =            */ sizeof(app_usbd_cdc_desc_acm_t), \
@@ -187,10 +159,10 @@ extern "C" {
     /*.bmCapabilities =     */ capabilities,                    \
 
 /**
- * @brief Initializer of endpoint descriptors for CDC DATA class
+ * @brief Initializer of endpoint descriptors for CDC DATA class.
  *
- * @param control_interface   Control interface
- * @param ...                 Subordinate interfaces list
+ * @param control_interface   Control interface.
+ * @param ...                 Subordinate interfaces list.
  */
 #define APP_USBD_CDC_UNION_DSC(control_interface, ...)                                            \
     /*.bLength =               */ sizeof(app_usbd_cdc_desc_union_t) + (NUM_VA_ARGS(__VA_ARGS__)), \

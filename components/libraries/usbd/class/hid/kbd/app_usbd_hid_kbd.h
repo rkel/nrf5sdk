@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 
 #ifndef APP_USBD_HID_KBD_H__
@@ -68,8 +40,8 @@ extern "C" {
  */
 
 /**
- * @brief HID keyboard codes
- * */
+ * @brief HID keyboard codes.
+ */
 typedef enum {
     APP_USBD_HID_KBD_A               = 4,  /**<KBD_A               code*/
     APP_USBD_HID_KBD_B               = 5,  /**<KBD_B               code*/
@@ -171,7 +143,7 @@ typedef enum {
 
 /**
  * @brief HID keyboard modifier
- * */
+ */
 typedef enum {
     APP_USBD_HID_KBD_MODIFIER_NONE          = 0x00,  /**< MODIFIER_NONE        bit*/
     APP_USBD_HID_KBD_MODIFIER_LEFT_CTRL     = 0x01,  /**< MODIFIER_LEFT_CTRL   bit*/
@@ -185,8 +157,8 @@ typedef enum {
 } app_usbd_hid_kbd_modifier_t;
 
 /**
- * @brief HID keyboard LEDs
- * */
+ * @brief HID keyboard LEDs.
+ */
 typedef enum {
     APP_USBD_HID_KBD_LED_NUM_LOCK     = 0x01,  /**< LED_NUM_LOCK    id*/
     APP_USBD_HID_KBD_LED_CAPS_LOCK    = 0x02,  /**< LED_CAPS_LOCK   id*/
@@ -215,16 +187,16 @@ APP_USBD_CLASS_TYPEDEF(app_usbd_hid_kbd,                        \
 #endif
 
 /**
- * @brief Global definition of app_usbd_hid_kbd_t class
+ * @brief Global definition of app_usbd_hid_kbd_t class.
  *
- * @param instance_name     Name of global instance
- * @param interface_number  Unique interface index
- * @param endpoint          Input endpoint (@ref nrf_drv_usbd_ep_t)
- * @param user_ev_handler   User event handler (optional)
+ * @param instance_name     Name of global instance.
+ * @param interface_number  Unique interface index.
+ * @param endpoint          Input endpoint (@ref nrf_drv_usbd_ep_t).
+ * @param user_ev_handler   User event handler (optional parameter: NULL might be passed here).
  *
  * Example class definition:
  * @code
-   APP_USBD_HID_KBD_GLOBAL_DEF(my_awesome_kbd, 0, NRF_DRV_USBD_EPIN1, NULL)
+   APP_USBD_HID_KBD_GLOBAL_DEF(my_awesome_kbd, 0, NRF_DRV_USBD_EPIN1, NULL);
  * @endcode
  */
 #define APP_USBD_HID_KBD_GLOBAL_DEF(instance_name, interface_number, endpoint, user_ev_handler) \
@@ -234,11 +206,12 @@ APP_USBD_CLASS_TYPEDEF(app_usbd_hid_kbd,                        \
                                              user_ev_handler)
 
 /**
- * @brief Helper function to get class instance from HID keyboard internals
+ * @brief Helper function to get class instance from HID keyboard internals.
  *
- * @param[in] p_kbd Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF)
- * @return Base class instance
- * */
+ * @param[in] p_kbd Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF).
+ *
+ * @return Base class instance.
+ */
 static inline app_usbd_class_inst_t const *
 app_usbd_hid_kbd_class_inst_get(app_usbd_hid_kbd_t const * p_kbd)
 {
@@ -246,10 +219,11 @@ app_usbd_hid_kbd_class_inst_get(app_usbd_hid_kbd_t const * p_kbd)
 }
 
 /**
- * @brief Helper function to get HID keyboard from base class instance
+ * @brief Helper function to get HID keyboard from base class instance.
  *
- * @param[in] p_inst Base class instance
- * @return HID keyboard class handle
+ * @param[in] p_inst Base class instance.
+ *
+ * @return HID keyboard class handle.
  */
 static inline app_usbd_hid_kbd_t const *
 app_usbd_hid_kbd_class_get(app_usbd_class_inst_t const * p_inst)
@@ -258,36 +232,40 @@ app_usbd_hid_kbd_class_get(app_usbd_class_inst_t const * p_inst)
 }
 
 /**
- * @brief Set HID keyboard modifier state
+ * @brief Set HID keyboard modifier state.
  *
- * @param[in] p_kbd     Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF)
- * @param[in] modifier  Type of modifier
- * @param[in] state     State, true active, false inactive
- * @return Standard error code
- * */
+ * @param[in] p_kbd     Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF).
+ * @param[in] modifier  Type of modifier.
+ * @param[in] state     State, true active, false inactive.
+ *
+ * @return Standard error code.
+ */
 ret_code_t app_usbd_hid_kbd_modifier_state_set(app_usbd_hid_kbd_t const * p_kbd,
                                                app_usbd_hid_kbd_modifier_t modifier,
                                                bool state);
 
 
 /**
- * @brief Press/release HID keyboard key
+ * @brief Press/release HID keyboard key.
  *
- * @param[in] p_kbd     Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF)
- * @param[in] key       Keyboard key code
- * @param[in] press     True -> key press, false -> release
- * @return Standard error code
- * */
+ * @param[in] p_kbd     Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF).
+ * @param[in] key       Keyboard key code.
+ * @param[in] press     True -> key press, false -> release.
+ *
+ * @return Standard error code.
+ */
 ret_code_t app_usbd_hid_kbd_key_control(app_usbd_hid_kbd_t const * p_kbd,
                                         app_usbd_hid_kbd_codes_t key,
                                         bool press);
 /**
- * @brief HID Keyboard LEDs state get
+ * @brief HID Keyboard LEDs state get.
  *
- * @param[in] p_kbd Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF)
- * @param[in] led   LED code
- * @return true if LED is set, false otherwise
- * */
+ * @param[in] p_kbd Keyboard instance (declared by @ref APP_USBD_HID_KBD_GLOBAL_DEF).
+ * @param[in] led   LED code.
+ *
+ * @retval true     LED is set.
+ * @retval false    LED is not set.
+ */
 bool app_usbd_hid_kbd_led_state_get(app_usbd_hid_kbd_t const * p_kbd,
                                     app_usbd_hid_kbd_led_t led);
 

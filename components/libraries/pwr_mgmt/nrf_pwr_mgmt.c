@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 
 #include "sdk_common.h"
@@ -60,6 +32,7 @@
 
 #ifdef SOFTDEVICE_PRESENT
     #include "nrf_soc.h"
+    #include "softdevice_handler.h"
 #endif // SOFTDEVICE_PRESENT
 
 #if NRF_PWR_MGMT_CONFIG_USE_SCHEDULER
@@ -108,7 +81,7 @@
 __STATIC_INLINE void nrf_pwr_mgmt_sleep_init(void)
 {
 #ifdef SOFTDEVICE_PRESENT
-    ASSERT(current_int_priority_get() <= APP_IRQ_PRIORITY_LOW);
+    ASSERT(current_int_priority_get() >= APP_IRQ_PRIORITY_LOW);
 #endif
     SCB->SCR |= SCB_SCR_SEVONPEND_Msk;
 }
@@ -236,17 +209,31 @@ ret_code_t nrf_pwr_mgmt_init(uint32_t ticks_per_1s)
 void nrf_pwr_mgmt_run(void)
 {
 #if NRF_PWR_MGMT_CONFIG_FPU_SUPPORT_ENABLED
-    /*
+
+    CRITICAL_REGION_ENTER();
+    uint32_t fpscr = __get_FPSCR();
+    /* 
      * Clear FPU exceptions.
      * Without this step, the FPU interrupt is marked as pending,
-     * preventing system from sleeping.
+     * preventing system from sleeping. Exceptions cleared:
+     * - IOC - Invalid Operation cumulative exception bit.
+     * - DZC - Division by Zero cumulative exception bit.
+     * - OFC - Overflow cumulative exception bit.
+     * - UFC - Underflow cumulative exception bit.
+     * - IXC - Inexact cumulative exception bit.
+     * - IDC - Input Denormal cumulative exception bit.
      */
-    uint32_t fpscr = __get_FPSCR();
     __set_FPSCR(fpscr & ~0x9Fu);
     __DMB();
     NVIC_ClearPendingIRQ(FPU_IRQn);
+    CRITICAL_REGION_EXIT();
 
-    // Assert if a critical FPU exception is signaled.
+    /* 
+     * Assert if a critical FPU exception is signaled:
+     * - IOC - Invalid Operation cumulative exception bit.
+     * - DZC - Division by Zero cumulative exception bit.
+     * - OFC - Overflow cumulative exception bit.
+     */
     ASSERT((fpscr & 0x03) == 0);
 #endif // NRF_PWR_MGMT_CONFIG_FPU_SUPPORT_ENABLED
 
@@ -264,22 +251,16 @@ void nrf_pwr_mgmt_run(void)
 
     // Wait for an event.
 #ifdef SOFTDEVICE_PRESENT
-    ret_code_t ret_code = sd_app_evt_wait();
-    if (ret_code == NRF_ERROR_SOFTDEVICE_NOT_ENABLED)
+    if (softdevice_handler_is_enabled())
     {
-        __WFE();
-        __SEV();
-        __WFE();
+        ret_code_t ret_code = sd_app_evt_wait();
+        ASSERT((ret_code == NRF_SUCCESS) || (ret_code == NRF_ERROR_SOFTDEVICE_NOT_ENABLED));
     }
     else
-    {
-        APP_ERROR_CHECK(ret_code);
-    }
-#else
-    __WFE();
-    __SEV();
-    __WFE();
 #endif // SOFTDEVICE_PRESENT
+    {
+        __WFE();
+    }
 
     DEBUG_PIN_CLEAR();
 
@@ -299,7 +280,7 @@ void nrf_pwr_mgmt_run(void)
 void nrf_pwr_mgmt_feed(void)
 {
     NRF_LOG_DEBUG("Feed\r\n");
-    // Once triggered, shutdown is inevitable.
+    // It does not stop started shutdown process.
     m_standby_counter = 0;
 }
 #endif // NRF_PWR_MGMT_CONFIG_STANDBY_TIMEOUT_ENABLED

@@ -1,41 +1,10 @@
-/**
- * Copyright (c) 2014 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/*
+ * Copyright (c) 2014 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is confidential property of Nordic Semiconductor. The use,
+ * copying, transfer or disclosure of such information is prohibited except by express written
+ * agreement with Nordic Semiconductor.
+ *
  */
 
 /**
@@ -69,8 +38,10 @@
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 
-#if (NRF_SD_BLE_API_VERSION == 3)
-#define NRF_BLE_MAX_MTU_SIZE      GATT_MTU_SIZE_DEFAULT                      /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
+#if (NRF_SD_BLE_API_VERSION <= 3)
+    #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT                   /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
+#else
+    #define NRF_BLE_MAX_MTU_SIZE        BLE_GATT_MTU_SIZE_DEFAULT               /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #endif
 
 #define CENTRAL_LINK_COUNT        8                                          /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
@@ -111,12 +82,12 @@ static const ble_gap_scan_params_t m_scan_params =
     .window   = SCAN_WINDOW,
     .timeout  = SCAN_TIMEOUT,
 
-    #if (NRF_SD_BLE_API_VERSION == 2)
+    #if (NRF_SD_BLE_API_VERSION <= 2)
         .selective   = 0,
         .p_whitelist = NULL,
     #endif
 
-    #if (NRF_SD_BLE_API_VERSION == 3)
+    #if (NRF_SD_BLE_API_VERSION >= 3)
         .use_whitelist  = 0,
         .adv_dir_report = 0,
     #endif
@@ -353,6 +324,7 @@ static void on_ble_evt(const ble_evt_t * const p_ble_evt)
         {
             NRF_LOG_INFO("Connection 0x%x established, starting DB discovery.\r\n",
                          p_gap_evt->conn_handle);
+
             APP_ERROR_CHECK_BOOL(p_gap_evt->conn_handle < TOTAL_LINK_COUNT);
 
             err_code = ble_lbs_c_handles_assign(&m_ble_lbs_c[p_gap_evt->conn_handle],
@@ -360,6 +332,7 @@ static void on_ble_evt(const ble_evt_t * const p_ble_evt)
                                                 NULL);
             APP_ERROR_CHECK(err_code);
 
+            memset(&m_ble_db_discovery[p_gap_evt->conn_handle], 0x00, sizeof(ble_db_discovery_t));
             err_code = ble_db_discovery_start(&m_ble_db_discovery[p_gap_evt->conn_handle],
                                               p_gap_evt->conn_handle);
             if (err_code != NRF_ERROR_BUSY)
@@ -392,19 +365,23 @@ static void on_ble_evt(const ble_evt_t * const p_ble_evt)
                          p_gap_evt->conn_handle,
                          p_gap_evt->params.disconnected.reason);
 
-            err_code = app_button_disable();
-            APP_ERROR_CHECK(err_code);
+            central_link_cnt = ble_conn_state_n_centrals();
+
+            if (central_link_cnt == 0)
+            {
+                err_code = app_button_disable();
+                APP_ERROR_CHECK(err_code);
+
+                // Turn off connection indication LED
+                bsp_board_led_off(CENTRAL_CONNECTED_LED);
+            }
 
             // Start scanning
             scan_start();
 
-            // Update LEDs status.
+            // Turn on LED for indicating scanning
             bsp_board_led_on(CENTRAL_SCANNING_LED);
-            central_link_cnt = ble_conn_state_n_centrals();
-            if (central_link_cnt == 0)
-            {
-                bsp_board_led_off(CENTRAL_CONNECTED_LED);
-            }
+
         } break;
 
         case BLE_GAP_EVT_ADV_REPORT:
@@ -422,6 +399,7 @@ static void on_ble_evt(const ble_evt_t * const p_ble_evt)
 
         case BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST:
         {
+            NRF_LOG_DEBUG("BLE_GAP_EVT_CONN_PARAM_UPDATE_REQUEST.\r\n");
             // Accept parameters requested by peer.
             err_code = sd_ble_gap_conn_param_update(p_gap_evt->conn_handle,
                                         &p_gap_evt->params.conn_param_update_request.conn_params);
@@ -446,8 +424,9 @@ static void on_ble_evt(const ble_evt_t * const p_ble_evt)
             APP_ERROR_CHECK(err_code);
         } break;
 
-#if (NRF_SD_BLE_API_VERSION == 3)
+#if (NRF_SD_BLE_API_VERSION >= 3)
         case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
+            NRF_LOG_DEBUG("BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST.\r\n");
             err_code = sd_ble_gatts_exchange_mtu_reply(p_ble_evt->evt.gatts_evt.conn_handle,
                                                        NRF_BLE_MAX_MTU_SIZE);
             APP_ERROR_CHECK(err_code);
@@ -530,7 +509,7 @@ static void ble_stack_init(void)
     CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT,PERIPHERAL_LINK_COUNT);
 
     // Enable BLE stack.
-#if (NRF_SD_BLE_API_VERSION == 3)
+#if (NRF_SD_BLE_API_VERSION >= 3)
     ble_enable_params.gatt_enable_params.att_mtu = NRF_BLE_MAX_MTU_SIZE;
 #endif
     err_code = softdevice_enable(&ble_enable_params);

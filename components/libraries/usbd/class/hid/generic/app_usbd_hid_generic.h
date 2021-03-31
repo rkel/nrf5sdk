@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 
 #ifndef APP_USBD_HID_GENERIC_H__
@@ -87,17 +59,17 @@ APP_USBD_CLASS_TYPEDEF(app_usbd_hid_generic,                                    
 #endif
 
 /**
- * @brief Global definition of app_usbd_hid_generic_t class
+ * @brief Global definition of app_usbd_hid_generic_t class.
  *
- * @param instance_name             Name of global instance
- * @param interface_number          Unique interface index
- * @param user_ev_handler           User event handler (optional)
- * @param endpoint_list             Input endpoint list (@ref nrf_drv_usbd_ep_t)
- * @param hid_dsc_list              HID descriptor item list @ref APP_USBD_HID_REPORT_ITEM, @ref APP_USBD_HID_PHYSICAL_ITEM
- * @param report_cnt                Report count
- * @param report_out_maxsize        Maximum output report size
+ * @param instance_name             Name of global instance.
+ * @param interface_number          Unique interface index.
+ * @param user_ev_handler           User event handler (optional).
+ * @param endpoint_list             Input endpoint list (@ref nrf_drv_usbd_ep_t).
+ * @param hid_dsc_list              HID descriptor item list @ref APP_USBD_HID_REPORT_ITEM, @ref APP_USBD_HID_PHYSICAL_ITEM.
+ * @param report_cnt                Report count.
+ * @param report_out_maxsize        Maximum output report size.
  *
- * @note This macro is just simplified version of @ref APP_USBD_HID_GENERIC_GLOBAL_DEF_INTERNAL
+ * @note This macro is just simplified version of @ref APP_USBD_HID_GENERIC_GLOBAL_DEF_INTERNAL.
  *
  * Example class definition:
  * @code
@@ -144,11 +116,11 @@ APP_USBD_CLASS_TYPEDEF(app_usbd_hid_generic,                                    
 
 
 /**
- * @brief Helper function to get class instance from HID generic class
+ * @brief Helper function to get class instance from HID generic class.
  *
- * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF)
+ * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF).
  *
- * @return Base class instance
+ * @return Base class instance.
  */
 static inline app_usbd_class_inst_t const *
 app_usbd_hid_generic_class_inst_get(app_usbd_hid_generic_t const * p_generic)
@@ -157,11 +129,11 @@ app_usbd_hid_generic_class_inst_get(app_usbd_hid_generic_t const * p_generic)
 }
 
 /**
- * @brief Helper function to get HID generic from base class instance
+ * @brief Helper function to get HID generic from base class instance.
  *
- * @param[in] p_inst Base class instance
+ * @param[in] p_inst Base class instance.
  *
- * @return HID generic class handle
+ * @return HID generic class handle.
  */
 static inline app_usbd_hid_generic_t const *
 app_usbd_hid_generic_class_get(app_usbd_class_inst_t const * p_inst)
@@ -173,12 +145,12 @@ app_usbd_hid_generic_class_get(app_usbd_class_inst_t const * p_inst)
  * @brief New IN report trigger
  *
  *
- * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF)
- * @param[in] rep_id    Input report ID
- * @param[in] p_buff    Report buffer
- * @param[in] size      Report size
+ * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF).
+ * @param[in] rep_id    Input report ID.
+ * @param[in] p_buff    Report buffer.
+ * @param[in] size      Report size.
  *
- * @return Standard error code
+ * @return Standard error code.
  */
 ret_code_t app_usbd_hid_generic_report_in_set(app_usbd_hid_generic_t const * p_generic,
                                               uint8_t rep_id,
@@ -187,14 +159,15 @@ ret_code_t app_usbd_hid_generic_report_in_set(app_usbd_hid_generic_t const * p_g
 
 
 /**
- * @brief Checks whether last IN report transfer has been done
+ * @brief Checks whether last IN report transfer has been done.
  *
  * Helper function to check, whether that last IN report transfer is done.
  *
- * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF)
- * @param rep_id input  Report ID
+ * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF).
+ * @param rep_id input  Report ID.
  *
- * @return true if transfer done, false otherwise
+ * @retval true  Transfer done.
+ * @retval false Transfer not done.
  */
 bool app_usbd_hid_generic_report_in_done(app_usbd_hid_generic_t const * p_generic, uint8_t rep_id);
 
@@ -202,9 +175,10 @@ bool app_usbd_hid_generic_report_in_done(app_usbd_hid_generic_t const * p_generi
 /**
  * @brief Returns last successful transfered IN report.
  *
- * @note Use this call only on @ref APP_USBD_HID_USER_EVT_IN_REPORT_DONE event
+ * @note Use this call only on @ref APP_USBD_HID_USER_EVT_IN_REPORT_DONE event.
  *
- * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF)
+ * @param[in] p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF).
+ *
  * @return Last transfered report ID.
  */
 uint8_t app_usbd_hid_generic_in_report_last_id(app_usbd_hid_generic_t const * p_generic);
@@ -216,6 +190,7 @@ uint8_t app_usbd_hid_generic_in_report_last_id(app_usbd_hid_generic_t const * p_
  *
  * @param[in]  p_generic HID generic class instance (defined by @ref APP_USBD_HID_GENERIC_GLOBAL_DEF)
  * @param[out] p_size    Last transfered OUT report size.
+ *
  * @return Last transfered OUT report.
  */
 const void * app_usbd_hid_generic_out_report_get(app_usbd_hid_generic_t const * p_generic,

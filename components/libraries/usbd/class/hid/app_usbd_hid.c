@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 #include "sdk_config.h"
 #if APP_USBD_CLASS_HID_ENABLED
@@ -51,14 +23,16 @@
  */
 
 /**
- * @brief Test whether SOF HID transfer is required
+ * @brief Test whether SOF HID transfer is required.
  *
- * This function handles idle period IN transfer
+ * This function handles idle period IN transfer.
  *
- * @param[in/out] p_hid_ctx Internal HID context
- * @param framecnt          SOF event frame counter
- * @retval true if          Idle transfer is required, false otherwise
- * */
+ * @param[in,out] p_hid_ctx Internal HID context.
+ * @param framecnt          SOF event frame counter.
+ *
+ * @retval true  Idle transfer is required.
+ * @retval false Idle transfer is not required.
+ */
 static bool hid_sof_required(app_usbd_hid_ctx_t * p_hid_ctx, uint16_t framecnt)
 {
     if (p_hid_ctx->idle_rate == 0)
@@ -94,17 +68,16 @@ static bool hid_sof_required(app_usbd_hid_ctx_t * p_hid_ctx, uint16_t framecnt)
 }
 
 /**
- * @brief User event handler
+ * @brief User event handler.
  *
- * @param[in] p_inst        Class instance
- * @param[in] p_hinst       HID class instance
- * @param[in] event user    Event type @ref app_usbd_hid_user_event_t
- * */
+ * @param[in] p_inst        Class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in] event user    Event type.
+ */
 static inline void user_event_handler(app_usbd_class_inst_t const * p_inst,
                                       app_usbd_hid_inst_t const * p_hinst,
                                       app_usbd_hid_user_event_t event)
 {
-    ASSERT(p_hinst->user_event_handler != NULL);
     if (p_hinst->user_event_handler != NULL)
     {
         p_hinst->user_event_handler(p_inst, event);
@@ -112,16 +85,14 @@ static inline void user_event_handler(app_usbd_class_inst_t const * p_inst,
 }
 
 /**
- * @brief Internal SETUP standard IN request handler
+ * @brief Internal SETUP standard IN request handler.
  *
- * @param[in] p_inst        Generic class instance
- * @param[in] p_hinst       HID class instance
- * @param[in/out] p_hid_ctx HID context
- * @param[in] p_setup_ev    Setup event
+ * @param[in] p_inst        Generic class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in,out] p_hid_ctx HID context.
+ * @param[in] p_setup_ev    Setup event.
  *
- * @return Standard error code
- * @retval NRF_SUCCESS if request handled correctly
- * @retval NRF_ERROR_NOT_SUPPORTED if request is not supported
+ * @return Standard error code.
  */
 static ret_code_t setup_req_std_in(app_usbd_class_inst_t const * p_inst,
                                    app_usbd_hid_inst_t const * p_hinst,
@@ -169,16 +140,14 @@ static ret_code_t setup_req_std_in(app_usbd_class_inst_t const * p_inst,
 }
 
 /**
- * @brief Internal SETUP standard OUT request handler
+ * @brief Internal SETUP standard OUT request handler.
  *
- * @param[in] p_inst        Generic class instance
- * @param[in] p_hinst       HID class instance
- * @param[in/out] p_hid_ctx HID context
- * @param[in] p_setup_ev    Setup event
+ * @param[in] p_inst        Generic class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in,out] p_hid_ctx HID context.
+ * @param[in] p_setup_ev    Setup event.
  *
- * @return Standard error code
- * @retval NRF_SUCCESS if request handled correctly
- * @retval NRF_ERROR_NOT_SUPPORTED if request is not supported
+ * @return Standard error code.
  */
 static ret_code_t setup_req_std_out(app_usbd_class_inst_t const * p_inst,
                                     app_usbd_hid_inst_t const * p_hinst,
@@ -191,16 +160,14 @@ static ret_code_t setup_req_std_out(app_usbd_class_inst_t const * p_inst,
 }
 
 /**
- * @brief Internal SETUP class IN request handler
+ * @brief Internal SETUP class IN request handler.
  *
- * @param[in] p_inst        Generic class instance
- * @param[in] p_hinst       HID class instance
- * @param[in/out] p_hid_ctx HID context
- * @param[in] p_setup_ev    Setup event
+ * @param[in] p_inst        Generic class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in,out] p_hid_ctx HID context.
+ * @param[in] p_setup_ev    Setup event.
  *
- * @return Standard error code
- * @retval NRF_SUCCESS if request handled correctly
- * @retval NRF_ERROR_NOT_SUPPORTED if request is not supported
+ * @return Standard error code.
  */
 static ret_code_t setup_req_class_in(app_usbd_class_inst_t const * p_inst,
                                      app_usbd_hid_inst_t const * p_hinst,
@@ -240,16 +207,14 @@ static ret_code_t setup_req_class_in(app_usbd_class_inst_t const * p_inst,
 }
 
 /**
- * @brief Internal SETUP class OUT request handler
+ * @brief Internal SETUP class OUT request handler.
  *
- * @param[in] p_inst        Generic class instance
- * @param[in] p_hinst       HID class instance
- * @param[in/out] p_hid_ctx HID context
- * @param[in] p_setup_ev    Setup event
+ * @param[in] p_inst        Generic class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in,out] p_hid_ctx HID context.
+ * @param[in] p_setup_ev    Setup event.
  *
- * @return Standard error code
- * @retval NRF_SUCCESS if request handled correctly
- * @retval NRF_ERROR_NOT_SUPPORTED if request is not supported
+ * @return Standard error code.
  */
 static ret_code_t setup_req_class_out(app_usbd_class_inst_t const * p_inst,
                                       app_usbd_hid_inst_t const * p_hinst,
@@ -284,16 +249,14 @@ static ret_code_t setup_req_class_out(app_usbd_class_inst_t const * p_inst,
 }
 
 /**
- * @brief Internal SETUP event handler
+ * @brief Internal SETUP event handler.
  *
- * @param[in] p_inst        Generic class instance
- * @param[in] p_hinst       HID class instance
- * @param[in/out] p_hid_ctx HID context
- * @param[in] p_setup_ev    Setup event
+ * @param[in] p_inst        Generic class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in,out] p_hid_ctx HID context.
+ * @param[in] p_setup_ev    Setup event.
  *
- * @return Standard error code
- * @retval NRF_SUCCESS if request handled correctly
- * @retval NRF_ERROR_NOT_SUPPORTED if request is not supported
+ * @return Standard error code.
  */
 static ret_code_t setup_event_handler(app_usbd_class_inst_t const * p_inst,
                                       app_usbd_hid_inst_t const * p_hinst,
@@ -344,16 +307,14 @@ static ret_code_t setup_event_handler(app_usbd_class_inst_t const * p_inst,
 }
 
 /**
- * @brief Endpoint IN event handler
+ * @brief Endpoint IN event handler.
  *
- * @param[in] p_inst        Generic class instance
- * @param[in] p_hinst       HID class instance
- * @param[in/out] p_hid_ctx HID context
- * @param[in] p_setup_ev    Setup event
+ * @param[in] p_inst        Generic class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in,out] p_hid_ctx HID context.
+ * @param[in] p_setup_ev    Setup event.
  *
- * @return Standard error code
- * @retval NRF_SUCCESS if request handled correctly
- * @retval NRF_ERROR_NOT_SUPPORTED if request is not supported
+ * @return Standard error code.
  */
 static ret_code_t endpoint_in_event_handler(app_usbd_class_inst_t const * p_inst,
                                             app_usbd_hid_inst_t const * p_hinst,
@@ -380,16 +341,14 @@ static ret_code_t endpoint_in_event_handler(app_usbd_class_inst_t const * p_inst
 }
 
 /**
- * @brief Endpoint OUT event handler
+ * @brief Endpoint OUT event handler.
  *
- * @param[in] p_inst        Generic class instance
- * @param[in] p_hinst       HID class instance
- * @param[in/out] p_hid_ctx HID context
- * @param[in] p_setup_ev    Setup event
+ * @param[in] p_inst        Generic class instance.
+ * @param[in] p_hinst       HID class instance.
+ * @param[in,out] p_hid_ctx HID context.
+ * @param[in] p_setup_ev    Setup event.
  *
- * @return Standard error code
- * @retval NRF_SUCCESS if request handled correctly
- * @retval NRF_ERROR_NOT_SUPPORTED if request is not supported
+ * @return Standard error code.
  */
 static ret_code_t endpoint_out_event_handler(app_usbd_class_inst_t const * p_inst,
                                              app_usbd_hid_inst_t const * p_hinst,

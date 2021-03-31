@@ -1,41 +1,12 @@
-/**
- * Copyright (c) 2012 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2012 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
  */
 
 /** @file
@@ -43,14 +14,14 @@
  * @defgroup ble_sdk_apple_notification_main main.c
  * @{
  * @ingroup ble_sdk_app_apple_notification
- * @brief Apple Notification Client Sample Application main file. Disclaimer: 
- * This client implementation of the Apple Notification Center Service can and 
+ * @brief Apple Notification Client Sample Application main file. Disclaimer:
+ * This client implementation of the Apple Notification Center Service can and
  * will be changed at any time by Nordic Semiconductor ASA.
  *
- * Server implementations such as the ones found in iOS can be changed at any 
+ * Server implementations such as the ones found in iOS can be changed at any
  * time by Apple and may cause this client implementation to stop working.
  *
- * This file contains the source code for a sample application using the Apple 
+ * This file contains the source code for a sample application using the Apple
  * Notification Center Service Client.
  */
 
@@ -91,8 +62,10 @@
 #error "Not enough resources on board"
 #endif
 
-#if (NRF_SD_BLE_API_VERSION == 3)
-#define NRF_BLE_MAX_MTU_SIZE           GATT_MTU_SIZE_DEFAULT                       /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
+#if (NRF_SD_BLE_API_VERSION <= 3)
+    #define NRF_BLE_MAX_MTU_SIZE        GATT_MTU_SIZE_DEFAULT                   /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
+#else
+    #define NRF_BLE_MAX_MTU_SIZE        BLE_GATT_MTU_SIZE_DEFAULT               /**< MTU size used in the softdevice enabling and to reply to a BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST event. */
 #endif
 
 #define CENTRAL_LINK_COUNT             0                                           /**< The number of central links used by the application. When changing this number remember to adjust the RAM settings. */
@@ -225,7 +198,7 @@ static uint8_t m_attr_disp_name[ATTR_DATA_SIZE];                       /**< Buff
  *
  * @details This function is called in case of an assert in the SoftDevice.
  *
- * @warning This handler is an example only and does not fit a final product. 
+ * @warning This handler is an example only and does not fit a final product.
  *          You must analyze how your product should react to asserts.
  * @warning On assert from the SoftDevice, the system can recover only on reset.
  *
@@ -333,6 +306,8 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
                     m_is_wl_changed = true;
                 }
             }
+            // Discover peer's services.
+            memset(&m_ble_db_discovery, 0x00, sizeof(m_ble_db_discovery));
             ret  = ble_db_discovery_start(&m_ble_db_discovery, p_evt->conn_handle);
             APP_ERROR_CHECK(ret);
         } break;
@@ -751,7 +726,7 @@ static void peer_manager_init(bool erase_bonds)
     sec_param.kdist_own.id   = 1;
     sec_param.kdist_peer.enc = 1;
     sec_param.kdist_peer.id  = 1;
-    
+
     ret = pm_sec_params_set(&sec_param);
     APP_ERROR_CHECK(ret);
 
@@ -903,7 +878,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             APP_ERROR_CHECK(ret);
             break; // BLE_GATTS_EVT_TIMEOUT
 
-#if (NRF_SD_BLE_API_VERSION == 3)
+#if (NRF_SD_BLE_API_VERSION >= 3)
         case BLE_GATTS_EVT_EXCHANGE_MTU_REQUEST:
             ret = sd_ble_gatts_exchange_mtu_reply(p_ble_evt->evt.gatts_evt.conn_handle,
                                                   NRF_BLE_MAX_MTU_SIZE);
@@ -1049,10 +1024,10 @@ static void ble_stack_init(void)
     ret_code_t ret;
 
     nrf_clock_lf_cfg_t clock_lf_cfg = NRF_CLOCK_LFCLKSRC;
-    
+
     // Initialize the SoftDevice handler module.
     SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
-    
+
     ble_enable_params_t ble_enable_params;
     ret = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT,
                                                PERIPHERAL_LINK_COUNT,
@@ -1063,9 +1038,9 @@ static void ble_stack_init(void)
 
     // Check the ram settings against the used number of links
     CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT, PERIPHERAL_LINK_COUNT);
-    
+
     // Enable BLE stack.
-#if (NRF_SD_BLE_API_VERSION == 3)
+#if (NRF_SD_BLE_API_VERSION >= 3)
     ble_enable_params.gatt_enable_params.att_mtu = NRF_BLE_MAX_MTU_SIZE;
 #endif
     ret = softdevice_enable(&ble_enable_params);
@@ -1095,7 +1070,7 @@ static void services_init(void)
                                   m_attr_appid,
                                   ATTR_DATA_SIZE);
     APP_ERROR_CHECK(ret);
-    
+
     ret = nrf_ble_ancs_c_app_attr_add(&m_ancs_c,
                                       BLE_ANCS_APP_ATTR_ID_DISPLAY_NAME,
                                       m_attr_disp_name,

@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 
 /**@file
@@ -65,49 +37,39 @@ extern "C" {
  *          at run time to ensure that the region is correct.
  */
 #if defined(NRF51)
-    #define CODE_PAGE_SIZE            (PAGE_SIZE_IN_WORDS*sizeof(uint32_t))
-#elif defined(NRF52)
-    #define CODE_PAGE_SIZE            (MBR_PAGE_SIZE_IN_WORDS*sizeof(uint32_t))
+    #define CODE_PAGE_SIZE            (PAGE_SIZE_IN_WORDS * sizeof(uint32_t))
+#elif defined(NRF52) || defined(NRF52840_XXAA)
+    #define CODE_PAGE_SIZE            (MBR_PAGE_SIZE_IN_WORDS * sizeof(uint32_t))
 #else
     #error "Architecture not set."
 #endif
 
 
 /** @brief  Maximum size of a data object.*/
-#ifdef NRF51
-
+#if defined( NRF51 )
     #define DATA_OBJECT_MAX_SIZE           (CODE_PAGE_SIZE * 4)
-
-#elif NRF52
-
+#elif defined( NRF52_SERIES ) || defined ( __SDK_DOXYGEN__ )
     #define DATA_OBJECT_MAX_SIZE           (CODE_PAGE_SIZE)
-
 #else
-
     #error "Architecture not set."
-
 #endif
 
 /** @brief  Page location of the bootloader settings address.
  */
 
-#if defined (NRF51 )
-
+#if defined ( NRF51 )
     #define BOOTLOADER_SETTINGS_ADDRESS     (0x0003FC00UL)
-
-#elif defined ( NRF52 )
-
+#elif defined( NRF52832_XXAA )
     #define BOOTLOADER_SETTINGS_ADDRESS     (0x0007F000UL)
-
+#elif defined( NRF52840_XXAA )
+    #define BOOTLOADER_SETTINGS_ADDRESS     (0x000FF000UL)
 #else
-
     #error No valid target set for BOOTLOADER_SETTINGS_ADDRESS.
-
 #endif
 
 
 
-#if defined(NRF52)
+#if defined(NRF52) || defined(NRF52832)
 
 /**
  * @brief   MBR parameters page in UICR.
@@ -116,7 +78,7 @@ extern "C" {
  *
  * @note If the value at the given location is 0xFFFFFFFF, no MBR parameters page is set.
  */
-#define NRF_UICR_MBR_PARAMS_PAGE_ADDRESS        (NRF_UICR_BASE + 0x18)
+#define NRF_UICR_MBR_PARAMS_PAGE_ADDRESS    (NRF_UICR_BASE + 0x18)
 
 
 /** @brief Page location of the MBR parameters page address.
@@ -125,6 +87,26 @@ extern "C" {
 #define NRF_MBR_PARAMS_PAGE_ADDRESS         (0x0007E000UL)
 
 #endif
+
+#if defined(NRF52840_XXAA)
+
+/**
+ * @brief   MBR parameters page in UICR.
+ *
+ * Register location in UICR where the page address of the MBR parameters page is stored (only used by the nRF52 MBR).
+ *
+ * @note If the value at the given location is 0xFFFFFFFF, no MBR parameters page is set.
+ */
+#define NRF_UICR_MBR_PARAMS_PAGE_ADDRESS     (NRF_UICR_BASE + 0x18)
+
+
+/** @brief Page location of the MBR parameters page address.
+ *
+ */
+#define NRF_MBR_PARAMS_PAGE_ADDRESS         (0x000FE000UL)
+
+#endif
+
 
 /** @brief  Size of the flash space reserved for application data.
  */

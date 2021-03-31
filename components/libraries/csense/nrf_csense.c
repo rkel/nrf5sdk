@@ -1,68 +1,43 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
+
 #include "sdk_common.h"
+
 #if NRF_MODULE_ENABLED(NRF_CSENSE)
+
+#include <string.h>
+
 #include "nrf_csense.h"
 #include "nrf_peripherals.h"
-#include "string.h"
 #include "nrf_assert.h"
 
-#if defined(__CORTEX_M) && (__CORTEX_M < 4)
-#ifndef ARM_MATH_CM0PLUS
-#define ARM_MATH_CM0PLUS
-#endif
-/*lint -save -e689 */
-#include "arm_math.h"
-/*lint -restore */
+#if     defined(__CC_ARM)
+#elif   defined(__ICCARM__)
+#elif   defined(__GNUC__)
+    #ifndef __CLZ
+        #define __CLZ(x)    __builtin_clz(x)
+    #endif
 #endif
 
 APP_TIMER_DEF(nrf_csense_timer);
 
 typedef struct
 {
-    nrf_csense_event_handler_t    event_handler;                        //!< Event handler for module.
-    nrf_drv_state_t               state;                                //!< State of module.
-    uint32_t                      ticks;                                //!< Timeout ticks of app_timer instance controlling csense module.
-    uint16_t                      raw_analog_values[MAX_ANALOG_INPUTS]; //!< Raw values of measurements.
-    uint8_t                       enabled_analog_channels_mask;         //!< Mask of enabled channels.
-}nrf_csense_t;
+    nrf_csense_event_handler_t  event_handler;                        //!< Event handler for module.
+    nrf_drv_state_t             state;                                //!< State of module.
+    uint32_t                    ticks;                                //!< Timeout ticks of app_timer instance controlling csense module.
+    uint16_t                    raw_analog_values[MAX_ANALOG_INPUTS]; //!< Raw values of measurements.
+    uint8_t                     enabled_analog_channels_mask;         //!< Mask of enabled channels.
+} nrf_csense_t;
 
 /* Module instance. */
 static nrf_csense_t m_nrf_csense;
@@ -76,8 +51,8 @@ static uint16_t m_values_buffer[NRF_CSENSE_MAX_PADS_NUMBER];
 /**
  * @brief Function for handling time-outs.
  *
- * @param[in] p_context             General purpose pointer. Will be passed to the time-out handler
- *                                  when the timer expires.
+ * @param[in] p_context     General purpose pointer. Will be passed to the time-out handler
+ *                          when the timer expires.
  */
 static void csense_timer_handler(void * p_context)
 {
@@ -96,11 +71,11 @@ static void csense_timer_handler(void * p_context)
 /**
  * @brief Function for updating maximum or minimum value.
  *
- * @param [in] p_instance                           Pointer to csense instance.
- * @param [in] p_pad                                Pointer to pad which should be checked for minimum or maximum value.
+ * @param [in] p_instance   Pointer to csense instance.
+ * @param [in] p_pad        Pointer to pad which should be checked for minimum or maximum value.
  */
 __STATIC_INLINE void min_or_max_update(nrf_csense_instance_t const * p_instance,
-                                         nrf_csense_pad_t            * p_pad)
+                                       nrf_csense_pad_t            * p_pad)
 {
     uint16_t val = m_nrf_csense.raw_analog_values[p_pad->analog_input_number];
 
@@ -121,8 +96,8 @@ __STATIC_INLINE void min_or_max_update(nrf_csense_instance_t const * p_instance,
  *
  * @note This function help to self calibrate the pads.
  *
- * @param [in] p_instance                           Pointer to csense instance.
- * @param [in] p_pad                                Pointer to pad to calculate ratio for.
+ * @param [in] p_instance   Pointer to csense instance.
+ * @param [in] p_pad        Pointer to pad to calculate ratio for.
  *
  * @return Difference between maximum and minimum values read on pads or 0 if minimum is bigger than maximum.
  *
@@ -147,16 +122,16 @@ __STATIC_INLINE uint16_t ratio_calculate(nrf_csense_instance_t const * p_instanc
 /**
  * @brief Function for calculating step.
  *
- * Function calculates step for slider basing on index of touched pads and values measured on them and neighboring pads.
+ * Function calculates step for slider basing on index of touched pads and values measured on
+ * them and neighboring pads.
  *
- * @param[in] p_instance                            Pointer to csense instance.
- * @param[in] pad_index_1                           Index of first pad.
- * @param[in] pad_index_1                           Index of second pad if 2 were touched.
+ * @param[in] p_instance    Pointer to csense instance.
+ * @param[in] pad_index     Index of the pad.
  *
  * @return Detected touched step.
  */
 static uint16_t calculate_step(nrf_csense_instance_t * p_instance,
-                                uint8_t                 pad_index)
+                               uint8_t                 pad_index)
 {
     uint16_t step = 0;
     uint32_t values_sum;
@@ -280,13 +255,13 @@ static uint16_t find_touched_pad(nrf_csense_instance_t const * p_instance,
 /**
  * @brief Function for finding touched step.
  *
- * @param [in] instance                             Pointer to csense instance.
+ * @param [in] instance     Pointer to csense instance.
  *
  * @return Detected touched step.
  */
 static uint16_t find_touched_step(nrf_csense_instance_t * p_instance)
 {
-    uint32_t  touched_mask = 0;
+    uint32_t touched_mask = 0;
     uint16_t pad          = 0;
     uint16_t step;
 
@@ -436,7 +411,7 @@ static void csense_event_handler(nrf_drv_csense_evt_t * p_event_struct)
 
 
 ret_code_t nrf_csense_init(nrf_csense_event_handler_t event_handler,
-                                  uint32_t                      ticks)
+                           uint32_t                   ticks)
 {
     ASSERT(event_handler != NULL);
     ASSERT(m_nrf_csense.state == NRF_DRV_STATE_UNINITIALIZED);
@@ -553,10 +528,11 @@ ret_code_t nrf_csense_enable(nrf_csense_instance_t * const p_instance)
     {
         p_instance->min_max[p_pad->pad_index].min_value = UINT16_MAX;
 
-        if ((m_nrf_csense.enabled_analog_channels_mask & (1UL << (p_pad->analog_input_number))) == 0) // If channel was already enabled skip it.
+         // If channel was already enabled skip it.
+        if ((m_nrf_csense.enabled_analog_channels_mask & (1UL << (p_pad->analog_input_number))) == 0)
         {
-            analog_channels_mask                        |= (1UL << (p_pad->analog_input_number));
-            m_nrf_csense.enabled_analog_channels_mask      |= (1UL << (p_pad->analog_input_number));
+            analog_channels_mask                      |= (1UL << (p_pad->analog_input_number));
+            m_nrf_csense.enabled_analog_channels_mask |= (1UL << (p_pad->analog_input_number));
         }
     }
 
@@ -571,11 +547,11 @@ ret_code_t nrf_csense_disable(nrf_csense_instance_t * const p_instance)
 {
     ASSERT(m_nrf_csense.state == NRF_DRV_STATE_POWERED_ON);
 
-    ret_code_t                  err_code;
-    nrf_csense_instance_t     * p_instance_temp = mp_nrf_csense_instance_head;
-    nrf_csense_pad_t const    * p_pad;
-    uint8_t                     channels_mask = 0;
-    uint8_t                     instance_channels_mask = 0;
+    ret_code_t               err_code;
+    nrf_csense_instance_t  * p_instance_temp = mp_nrf_csense_instance_head;
+    nrf_csense_pad_t const * p_pad;
+    uint8_t                  channels_mask = 0;
+    uint8_t                  instance_channels_mask = 0;
 
     for (p_instance_temp = mp_nrf_csense_instance_head; p_instance_temp != NULL;
          p_instance_temp = p_instance_temp->p_next_instance)

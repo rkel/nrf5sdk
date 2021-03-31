@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 #include "sdk_config.h"
 #if APP_USBD_HID_GENERIC_ENABLED
@@ -50,16 +22,17 @@
 /**
  * @ingroup app_usbd_hid_generic
  *
- * Module with types, definitions and API used by HID generic
+ * Module with types, definitions and API used by HID generic.
  * @{
  */
 
 
 /**
- * @brief Auxiliary function to access HID generic context data
+ * @brief Auxiliary function to access HID generic context data.
  *
- * @param[in] p_inst    Class instance data
- * @return HID generic instance data @ref app_usbd_hid_generic_ctx_t
+ * @param[in] p_inst    Class instance data.
+ *
+ * @return HID generic class instance data context.
  */
 static inline app_usbd_hid_generic_ctx_t *
 hid_generic_ctx_get(app_usbd_hid_generic_t const * p_generic)
@@ -70,10 +43,11 @@ hid_generic_ctx_get(app_usbd_hid_generic_t const * p_generic)
 }
 
 /**
- * @brief Auxiliary function to access HID generic instance data
+ * @brief Auxiliary function to access HID generic instance data.
  *
- * @param[in] p_inst Class instance data
- * @return HID generic instance data @ref app_usbd_hid_generic_t
+ * @param[in] p_inst Class instance data.
+ *
+ * @return HID generic class instance data.
  */
 static inline app_usbd_hid_generic_t const *
 hid_generic_get(app_usbd_class_inst_t const * p_inst)
@@ -84,9 +58,11 @@ hid_generic_get(app_usbd_class_inst_t const * p_inst)
 
 
 /**
- * @brief Returns report ID buffer descriptor
+ * @brief Returns report ID buffer descriptor.
  *
- * @*/
+ * @param[in] p_generic Internal HID generic context.
+ *
+ */
 static inline app_usbd_hid_report_buffer_t const *
 hid_generic_rep_buffer_get(app_usbd_hid_generic_t const * p_generic, uint8_t rep_id)
 {
@@ -96,25 +72,26 @@ hid_generic_rep_buffer_get(app_usbd_hid_generic_t const * p_generic, uint8_t rep
     return app_usbd_hid_rep_buff_in_get(p_hinst, rep_id);
 }
 
-/**@brief Auxiliary function to prepare report transfer buffer to next transfer
+/**
+ * @brief Auxiliary function to prepare report transfer buffer to next transfer.
  *
- * @param[in] p_generic_ctx Internal HID generic context
- * @retval true if next transfer is required
- * @retval false if next transfer is not required
+ * @param[in] p_generic_ctx Internal HID generic context.
+ *
+ * @return Standard error code.
  */
 static inline bool hid_generic_transfer_next(app_usbd_hid_generic_ctx_t * p_generic_ctx,
                                              uint8_t rep_id)
 {
-    ASSERT(rep_id < 32);
+    ASSERT(rep_id < (sizeof(p_generic_ctx->rep_request_mask) * 8));
     return IS_SET(p_generic_ctx->rep_request_mask, rep_id);
 }
 
 
 /**
- * @brief Triggers IN endpoint transfer
+ * @brief Triggers IN endpoint transfer.
  *
- * @param[in] p_generic HID generic instance
- * @return Standard error code
+ * @param[in] p_generic HID generic instance.
+ * @return Standard error code.
  */
 static inline ret_code_t hid_generic_transfer_set(app_usbd_hid_generic_t const * p_generic,
                                                   uint8_t rep_id)

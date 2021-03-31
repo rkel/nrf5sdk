@@ -1,41 +1,12 @@
-/**
- * Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2015 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
  */
 #include  "sdk_common.h"
 #if NRF_MODULE_ENABLED(BLE_ADVERTISING)
@@ -76,7 +47,7 @@ static ble_advertising_error_handler_t m_error_handler;                         
 static bool                            m_whitelist_temporarily_disabled;            /**< Flag to keep track of temporary disabling of the whitelist. */
 static bool                            m_whitelist_reply_expected;
 
-#if (NRF_SD_BLE_API_VERSION == 2)
+#if (NRF_SD_BLE_API_VERSION <= 2)
 
     // For SoftDevices v 2.x, this module caches a whitelist which is retrieved from the
     // application using an event, and which is passed as a parameter when calling
@@ -104,7 +75,7 @@ static bool                            m_whitelist_reply_expected;
 #endif
 
 
-#if (NRF_SD_BLE_API_VERSION == 2)
+#if (NRF_SD_BLE_API_VERSION <= 2)
 
     static bool whitelist_has_entries()
     {
@@ -318,7 +289,7 @@ static ret_code_t set_adv_mode_fast(ble_gap_adv_params_t * p_adv_params)
         (!m_whitelist_temporarily_disabled) &&
         (whitelist_has_entries()))
     {
-        #if (NRF_SD_BLE_API_VERSION == 2)
+        #if (NRF_SD_BLE_API_VERSION <= 2)
             p_adv_params->p_whitelist = &m_whitelist;
         #endif
 
@@ -359,7 +330,7 @@ static ret_code_t set_adv_mode_slow(ble_gap_adv_params_t * p_adv_params)
         (!m_whitelist_temporarily_disabled) &&
         (whitelist_has_entries()))
     {
-        #if (NRF_SD_BLE_API_VERSION == 2)
+        #if (NRF_SD_BLE_API_VERSION <= 2)
         {
             p_adv_params->p_whitelist = &m_whitelist;
         }
@@ -460,7 +431,7 @@ uint32_t ble_advertising_init(ble_advdata_t                   const * p_advdata,
         m_advdata.p_tx_power_level = p_advdata->p_tx_power_level;
     }
 
-#if (NRF_SD_BLE_API_VERSION == 2)
+#if (NRF_SD_BLE_API_VERSION <= 2)
         for (int i = 0; i <BLE_GAP_WHITELIST_ADDR_MAX_COUNT ; i++)
         {
             m_whitelist.pp_addrs[i] = &m_whitelist_addrs[i];
@@ -522,7 +493,7 @@ uint32_t ble_advertising_start(ble_adv_mode_t advertising_mode)
         (m_adv_modes_config.ble_adv_whitelist_enabled) &&
         (!m_whitelist_temporarily_disabled))
     {
-        #if (NRF_SD_BLE_API_VERSION == 3)
+        #if (NRF_SD_BLE_API_VERSION >= 3)
             m_whitelist_in_use = false;
         #endif
         m_whitelist_reply_expected = true;
@@ -662,7 +633,7 @@ uint32_t ble_advertising_whitelist_reply(ble_gap_addr_t const * p_gap_addrs,
 
     m_whitelist_reply_expected = false;
 
-    #if (NRF_SD_BLE_API_VERSION == 2)
+    #if (NRF_SD_BLE_API_VERSION <= 2)
 
         m_whitelist.addr_count = addr_cnt;
         m_whitelist.irk_count  = irk_cnt;
@@ -695,7 +666,7 @@ uint32_t ble_advertising_restart_without_whitelist(void)
 
     m_whitelist_temporarily_disabled = true;
 
-    #if (NRF_SD_BLE_API_VERSION == 3)
+    #if (NRF_SD_BLE_API_VERSION >= 3)
         m_whitelist_in_use = false;
     #endif
 

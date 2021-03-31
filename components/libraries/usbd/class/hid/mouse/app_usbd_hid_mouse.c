@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 #include "sdk_config.h"
 #if APP_USBD_HID_MOUSE_ENABLED
@@ -54,10 +26,11 @@
  */
 
 /**
- * @brief Auxiliary function to access HID mouse context data
+ * @brief Auxiliary function to access HID mouse context data.
  *
- * @param[in] p_inst class instance data
- * @return HID mouse instance data @ref app_usbd_hid_mouse_ctx_t
+ * @param[in] p_inst class instance data.
+ *
+ * @return HID mouse instance data context.
  */
 static inline app_usbd_hid_mouse_ctx_t * hid_mouse_ctx_get(app_usbd_hid_mouse_t const * p_mouse)
 {
@@ -67,10 +40,11 @@ static inline app_usbd_hid_mouse_ctx_t * hid_mouse_ctx_get(app_usbd_hid_mouse_t 
 }
 
 /**
- * @brief Auxiliary function to access HID mouse instance data
+ * @brief Auxiliary function to access HID mouse instance data.
  *
- * @param[in] p_inst class instance data
- * @return HID mouse instance data @ref app_usbd_hid_mouse_t
+ * @param[in] p_inst class instance data.
+ *
+ * @return HID mouse instance.
  */
 static inline app_usbd_hid_mouse_t const * hid_mouse_get(app_usbd_class_inst_t const * p_inst)
 {
@@ -78,12 +52,13 @@ static inline app_usbd_hid_mouse_t const * hid_mouse_get(app_usbd_class_inst_t c
     return (app_usbd_hid_mouse_t const *)p_inst;
 }
 
- /**
- * @brief Returns mouse report buffer handle
+/**
+ * @brief Returns mouse report buffer handle.
  *
- * @param[in] p_kbd HID keyboard instance
- * @return HID report buffer @ref app_usbd_hid_report_buffer_t
- * */
+ * @param[in] p_kbd HID keyboard instance.
+ *
+ * @return HID report buffer.
+ */
 static inline
 app_usbd_hid_report_buffer_t const * hid_mouse_rep_buffer_get(app_usbd_hid_mouse_t const * p_mouse)
 {
@@ -99,10 +74,11 @@ app_usbd_hid_report_buffer_t const * hid_mouse_rep_buffer_get(app_usbd_hid_mouse
     return app_usbd_hid_rep_buff_in_get(p_hinst, 0);
 }
 
-/**@brief Auxiliary function to get report value from internal accumulated value
+/**@brief Auxiliary function to get report value from internal accumulated value.
  *
- * @param[in] acc accumulated XY axis or scroll
- * @return Offset value that could be written directly to report buffer
+ * @param[in] acc Accumulated XY axis or scroll.
+ *
+ * @return Offset value that could be written directly to report buffer.
  */
 static inline int8_t hid_mouse_axis_acc_get(int16_t acc)
 {
@@ -119,11 +95,12 @@ static inline int8_t hid_mouse_axis_acc_get(int16_t acc)
     return acc;
 }
 
-/**@brief Auxiliary function to prepare report transfer buffer to next transfer
+/**@brief Auxiliary function to prepare report transfer buffer to next transfer.
  *
- * @param[in] p_mouse_ctx mouse internal context
- * @retval true if next transfer is required
- * @retval false if next transfer is not required
+ * @param[in] p_mouse_ctx Mouse internal context.
+ *
+ * @retval true     Next transfer is required.
+ * @retval false    Next transfer is not required.
  */
 static inline bool hid_mouse_transfer_next(app_usbd_hid_mouse_t const * p_mouse)
 {
@@ -170,10 +147,11 @@ static inline bool hid_mouse_transfer_next(app_usbd_hid_mouse_t const * p_mouse)
 }
 
 /**
- * @brief Triggers IN endpoint transfer
+ * @brief Triggers IN endpoint transfer.
  *
- * @param[in] p_mouse HID mouse instance
- * @return standard error code
+ * @param[in] p_mouse HID mouse instance.
+ *
+ * @return Standard error code.
  */
 static inline ret_code_t hid_mouse_transfer_set(app_usbd_hid_mouse_t const * p_mouse)
 {
@@ -209,11 +187,13 @@ static inline ret_code_t hid_mouse_transfer_set(app_usbd_hid_mouse_t const * p_m
 }
 
 /**
- * @brief Checks if adding would cause 16 bit signed integer overflow
+ * @brief Checks if adding would cause 16 bit signed integer overflow.
  *
- * @param[in] signed 16 bit accumulator to test
- * @param[in] value value to add to accumulator
- * @return true if overflow detected, false otherwise
+ * @param[in] acc   Signed 16 bit accumulator to test.
+ * @param[in] value Value to add to accumulator.
+ *
+ * @retval true     Overflow detected.
+ * @retval false    No overflow detected.
  */
 static inline bool hid_mouse_acc_overflow_check(int16_t acc, int8_t val)
 {

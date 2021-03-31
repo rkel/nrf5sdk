@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2016 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2016 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 
 #ifndef APP_USBD_CDC_ACM_H__
@@ -94,7 +66,7 @@ APP_USBD_CLASS_TYPEDEF(app_usbd_cdc_acm,            \
 /*lint -save -e407 */
 
 /**
- * @brief Events passed to user event handler
+ * @brief Events passed to user event handler.
  *
  * @note Example prototype of user event handler:
  *
@@ -104,28 +76,28 @@ APP_USBD_CLASS_TYPEDEF(app_usbd_cdc_acm,            \
  * @endcode
  */
 typedef enum app_usbd_cdc_acm_user_event_e {
-    APP_USBD_CDC_ACM_USER_EVT_SUSPEND = 0, /**< User event SUSPEND    */
-    APP_USBD_CDC_ACM_USER_EVT_RESUME,      /**< User event RESUME     */
-    APP_USBD_CDC_ACM_USER_EVT_START,       /**< User event START      */
-    APP_USBD_CDC_ACM_USER_EVT_STOP,        /**< User event STOP       */
+    APP_USBD_CDC_ACM_USER_EVT_SUSPEND = 0, /**< User event SUSPEND.    */
+    APP_USBD_CDC_ACM_USER_EVT_RESUME,      /**< User event RESUME.     */
+    APP_USBD_CDC_ACM_USER_EVT_START,       /**< User event START.      */
+    APP_USBD_CDC_ACM_USER_EVT_STOP,        /**< User event STOP.       */
 
-    APP_USBD_CDC_ACM_USER_EVT_RX_DONE,     /**< User event RX_DONE    */
-    APP_USBD_CDC_ACM_USER_EVT_TX_DONE,     /**< User event TX_DONE    */
+    APP_USBD_CDC_ACM_USER_EVT_RX_DONE,     /**< User event RX_DONE.    */
+    APP_USBD_CDC_ACM_USER_EVT_TX_DONE,     /**< User event TX_DONE.    */
 
-    APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN,   /**< User event PORT_OPEN  */
-    APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE,  /**< User event PORT_CLOSE  */
+    APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN,   /**< User event PORT_OPEN.  */
+    APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE,  /**< User event PORT_CLOSE. */
 } app_usbd_cdc_acm_user_event_t;
 
 /*lint -restore*/
 
 /**
- * @brief Default CDC ACM descriptors
+ * @brief Default CDC ACM descriptors.
  *
- * @param comm_interface COMM interface number
- * @param comm_epin      COMM interface IN endpoint
- * @param data_interface DATA interface number
- * @param data_epin      DATA interface IN endpoint
- * @param data_epout     DATA interface OUT endpoint
+ * @param comm_interface COMM interface number.
+ * @param comm_epin      COMM interface IN endpoint.
+ * @param data_interface DATA interface number.
+ * @param data_epin      DATA interface IN endpoint.
+ * @param data_epout     DATA interface OUT endpoint.
  */
 #define APP_USBD_CDC_ACM_DEFAULT_DESC(comm_interface,                       \
                                       comm_epin,                            \
@@ -147,14 +119,14 @@ typedef enum app_usbd_cdc_acm_user_event_e {
         APP_USBD_CDC_DATA_EP_DSC(data_epin, data_epout, NRF_DRV_USBD_EPSIZE)
 
 /**
- * @brief Global definition of app_usbd_cdc_acm_t class instance
+ * @brief Global definition of app_usbd_cdc_acm_t class instance.
  *
- * @param instance_name             Name of global instance
- * @param interfaces_configs        Interfaces configurations
- * @param user_ev_handler           User event handler (optional)
- * @param raw_descriptors           Raw descriptor table
+ * @param instance_name             Name of global instance.
+ * @param interfaces_configs        Interfaces configurations.
+ * @param user_ev_handler           User event handler (optional).
+ * @param raw_descriptors           Raw descriptor table.
  *
- * @note This macro is just simplified version of @ref APP_USBD_CDC_ACM_GLOBAL_DEF_INTERNAL
+ * @note This macro is just simplified version of @ref APP_USBD_CDC_ACM_GLOBAL_DEF_INTERNAL.
  *
  */
 #define APP_USBD_CDC_ACM_GLOBAL_DEF(instance_name,              \
@@ -167,10 +139,11 @@ typedef enum app_usbd_cdc_acm_user_event_e {
                                          raw_descriptors)
 
 /**
- * @@brief Helper function to get class instance from CDC ACM class
+ * @brief Helper function to get class instance from CDC ACM class.
  *
- * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF)
- * @return Base class instance
+ * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF).
+ *
+ * @return Base class instance.
  */
 static inline app_usbd_class_inst_t const *
 app_usbd_cdc_acm_class_inst_get(app_usbd_cdc_acm_t const * p_cdc_acm)
@@ -179,10 +152,11 @@ app_usbd_cdc_acm_class_inst_get(app_usbd_cdc_acm_t const * p_cdc_acm)
 }
 
 /**
- * @brief Helper function to get cdc_acm specific request from cdc_acm class
+ * @brief Helper function to get cdc_acm specific request from cdc_acm class.
  *
- * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF)
- * @return CDC ACM class specific request
+ * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF).
+ *
+ * @return CDC ACM class specific request.
  */
 static inline app_usbd_cdc_acm_req_t *
 app_usbd_cdc_acm_class_request_get(app_usbd_cdc_acm_t const * p_cdc_acm)
@@ -191,11 +165,11 @@ app_usbd_cdc_acm_class_request_get(app_usbd_cdc_acm_t const * p_cdc_acm)
 }
 
 /**
- * @brief Helper function to get cdc_acm from base class instance
+ * @brief Helper function to get cdc_acm from base class instance.
  *
- * @param[in] p_inst Base class instance
+ * @param[in] p_inst Base class instance.
  *
- * @return CDC ACM class handle
+ * @return CDC ACM class handle.
  */
 static inline app_usbd_cdc_acm_t const *
 app_usbd_cdc_acm_class_get(app_usbd_class_inst_t const * p_inst)
@@ -210,11 +184,11 @@ app_usbd_cdc_acm_class_get(app_usbd_class_inst_t const * p_inst)
  * This is asynchronous call. User should wait for @ref APP_USBD_CDC_ACM_USER_EVT_TX_DONE event
  * to be sure that all data has been sent and input buffer could be accessed again.
  *
- * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF)
- * @param[in] p_buf     Input buffer
- * @param[in] length    Input buffer length
+ * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF).
+ * @param[in] p_buf     Input buffer.
+ * @param[in] length    Input buffer length.
  *
- * @return Standard error code
+ * @return Standard error code.
  */
 ret_code_t app_usbd_cdc_acm_write(app_usbd_cdc_acm_t const * p_cdc_acm,
                                   const void *               p_buf,
@@ -226,7 +200,7 @@ ret_code_t app_usbd_cdc_acm_write(app_usbd_cdc_acm_t const * p_cdc_acm,
  * This function should be used on @ref APP_USBD_CDC_ACM_USER_EVT_RX_DONE event to get
  * information how many bytes have been transfered.
  *
- * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF)
+ * @param[in] p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF).
  *
  * @return Amount of data transfered.
  */
@@ -235,44 +209,44 @@ size_t app_usbd_cdc_acm_rx_size(app_usbd_cdc_acm_t const * p_cdc_acm);
 /**
  * @brief Reads data from CDC ACM serial port.
  *
- * @param[in]  p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF)
- * @param[out] p_buf     Output buffer
- * @param[in]  length    Output buffer length (must by multiple of @ref NRF_DRV_USBD_EPSIZE)
+ * @param[in]  p_cdc_acm CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF).
+ * @param[out] p_buf     Output buffer.
+ * @param[in]  length    Output buffer length (must by multiple of @ref NRF_DRV_USBD_EPSIZE).
  *
- * @return Standard error code
+ * @return Standard error code.
  */
 ret_code_t app_usbd_cdc_acm_read(app_usbd_cdc_acm_t const * p_cdc_acm,
                                  void *                     p_buf,
                                  size_t                     length);
 /**
- * @brief Serial state notifications
+ * @brief Serial state notifications.
  * */
 typedef enum {
-    APP_USBD_CDC_ACM_SERIAL_STATE_DCD     = (1u << 0), /**< Notification bit DCD    */
-    APP_USBD_CDC_ACM_SERIAL_STATE_DSR     = (1u << 1), /**< Notification bit DSR    */
-    APP_USBD_CDC_ACM_SERIAL_STATE_BREAK   = (1u << 2), /**< Notification bit BREAK  */
-    APP_USBD_CDC_ACM_SERIAL_STATE_RING    = (1u << 3), /**< Notification bit RING   */
-    APP_USBD_CDC_ACM_SERIAL_STATE_FRAMING = (1u << 4), /**< Notification bit FRAMING*/
-    APP_USBD_CDC_ACM_SERIAL_STATE_PARITY  = (1u << 5), /**< Notification bit PARITY */
-    APP_USBD_CDC_ACM_SERIAL_STATE_OVERRUN = (1u << 6), /**< Notification bit OVERRUN*/
+    APP_USBD_CDC_ACM_SERIAL_STATE_DCD     = (1u << 0), /**< Notification bit DCD.    */
+    APP_USBD_CDC_ACM_SERIAL_STATE_DSR     = (1u << 1), /**< Notification bit DSR.    */
+    APP_USBD_CDC_ACM_SERIAL_STATE_BREAK   = (1u << 2), /**< Notification bit BREAK.  */
+    APP_USBD_CDC_ACM_SERIAL_STATE_RING    = (1u << 3), /**< Notification bit RING.   */
+    APP_USBD_CDC_ACM_SERIAL_STATE_FRAMING = (1u << 4), /**< Notification bit FRAMING.*/
+    APP_USBD_CDC_ACM_SERIAL_STATE_PARITY  = (1u << 5), /**< Notification bit PARITY. */
+    APP_USBD_CDC_ACM_SERIAL_STATE_OVERRUN = (1u << 6), /**< Notification bit OVERRUN.*/
 } app_usbd_cdc_acm_serial_state_t;
 
 /**
- * @brief Serial line state
- * */
+ * @brief Serial line state.
+ */
 typedef enum {
-    APP_USBD_CDC_ACM_LINE_STATE_DTR = (1u << 0),  /**< Line state bit DTR*/
-    APP_USBD_CDC_ACM_LINE_STATE_RTS = (1u << 1),  /**< Line state bit RTS*/
+    APP_USBD_CDC_ACM_LINE_STATE_DTR = (1u << 0),  /**< Line state bit DTR.*/
+    APP_USBD_CDC_ACM_LINE_STATE_RTS = (1u << 1),  /**< Line state bit RTS.*/
 } app_usbd_cdc_acm_line_state_t;
 
 /**
- * @brief Serial state notification via IN interrupt endpoint
+ * @brief Serial state notification via IN interrupt endpoint.
  *
- * @param[in] p_cdc_acm     CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF)
- * @param[in] serial_state  Serial state notification type
- * @param[in] value         Serial state value
+ * @param[in] p_cdc_acm     CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF).
+ * @param[in] serial_state  Serial state notification type.
+ * @param[in] value         Serial state value.
  *
- * @return Standard error code
+ * @return Standard error code.
  */
 ret_code_t app_usbd_cdc_acm_serial_state_notify(app_usbd_cdc_acm_t const *      p_cdc_acm,
                                                 app_usbd_cdc_acm_serial_state_t serial_state,
@@ -281,11 +255,11 @@ ret_code_t app_usbd_cdc_acm_serial_state_notify(app_usbd_cdc_acm_t const *      
 /**
  * @brief Control line value get.
  *
- * @param[in]  p_cdc_acm   CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF)
- * @param[in]  line_state  Line control value type
- * @param[out] value       Line control value
+ * @param[in]  p_cdc_acm   CDC ACM class instance (defined by @ref APP_USBD_CDC_ACM_GLOBAL_DEF).
+ * @param[in]  line_state  Line control value type.
+ * @param[out] value       Line control value.
  *
- * @return Standard error code
+ * @return Standard error code.
  */
 ret_code_t app_usbd_cdc_acm_line_state_get(app_usbd_cdc_acm_t const *    p_cdc_acm,
                                            app_usbd_cdc_acm_line_state_t line_state,

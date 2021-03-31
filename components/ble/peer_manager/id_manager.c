@@ -1,41 +1,13 @@
-/**
- * Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
- * 
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- * 
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 
- * 2. Redistributions in binary form, except as embedded into a Nordic
- *    Semiconductor ASA integrated circuit in a product or a software update for
- *    such product, must reproduce the above copyright notice, this list of
- *    conditions and the following disclaimer in the documentation and/or other
- *    materials provided with the distribution.
- * 
- * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- * 
- * 4. This software, with or without modification, must only be used with a
- *    Nordic Semiconductor ASA integrated circuit.
- * 
- * 5. Any software provided in binary form under this license must not be reverse
- *    engineered, decompiled, modified and/or disassembled.
- * 
- * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
- * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
- * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+/* Copyright (c) 2015 Nordic Semiconductor. All Rights Reserved.
+ *
+ * The information contained herein is property of Nordic Semiconductor ASA.
+ * Terms and conditions of usage are described in detail in NORDIC
+ * SEMICONDUCTOR STANDARD SOFTWARE LICENSE AGREEMENT.
+ *
+ * Licensees are granted free, non-transferable use of the information. NO
+ * WARRANTY of ANY KIND is provided. This heading must NOT be removed from
+ * the file.
+ *
  */
 
 #include "sdk_common.h"
@@ -88,7 +60,7 @@ static ble_conn_state_user_flag_id_t    m_conn_state_user_flag_id;
 static uint8_t                          m_wlisted_peer_cnt;
 static pm_peer_id_t                     m_wlisted_peers[BLE_GAP_WHITELIST_ADDR_MAX_COUNT];
 
-#if (NRF_SD_BLE_API_VERSION == 2)
+#if (NRF_SD_BLE_API_VERSION <= 2)
     static ble_gap_addr_t               m_current_id_addr;
 #endif
 
@@ -435,7 +407,7 @@ ret_code_t im_init(void)
         return NRF_ERROR_INTERNAL;
     }
 
-    #if (NRF_SD_BLE_API_VERSION == 2)
+    #if (NRF_SD_BLE_API_VERSION <= 2)
         ret_code_t ret_code = sd_ble_gap_address_get(&m_current_id_addr);
         if (ret_code != NRF_SUCCESS)
         {
@@ -698,7 +670,7 @@ static ret_code_t peers_id_keys_get(pm_peer_id_t   const * p_peers,
 ret_code_t im_device_identities_list_set(pm_peer_id_t const * p_peers,
                                          uint32_t             peer_cnt)
 {
-    #if (NRF_SD_BLE_API_VERSION == 3)
+    #if (NRF_SD_BLE_API_VERSION >= 3)
 
         ret_code_t             ret;
         pm_peer_data_t         peer_data;
@@ -759,7 +731,7 @@ ret_code_t im_device_identities_list_set(pm_peer_id_t const * p_peers,
 }
 
 
-#if (NRF_SD_BLE_API_VERSION == 2)
+#if (NRF_SD_BLE_API_VERSION <= 2)
 
 static ret_code_t address_set_v2(uint8_t cycle_mode, ble_gap_addr_t * p_addr)
 {
@@ -786,7 +758,7 @@ static ret_code_t address_set_v2(uint8_t cycle_mode, ble_gap_addr_t * p_addr)
 
 ret_code_t im_id_addr_set(ble_gap_addr_t const * p_addr)
 {
-    #if (NRF_SD_BLE_API_VERSION == 2)
+    #if (NRF_SD_BLE_API_VERSION <= 2)
 
         ret_code_t     ret;
         ble_gap_addr_t current_addr;
@@ -829,7 +801,7 @@ ret_code_t im_id_addr_get(ble_gap_addr_t * p_addr)
 {
     NRF_PM_DEBUG_CHECK(p_addr != NULL);
 
-    #if (NRF_SD_BLE_API_VERSION == 2)
+    #if (NRF_SD_BLE_API_VERSION <= 2)
         memcpy(p_addr, &m_current_id_addr, sizeof(ble_gap_addr_t));
         return NRF_SUCCESS;
     #else
@@ -840,7 +812,7 @@ ret_code_t im_id_addr_get(ble_gap_addr_t * p_addr)
 
 ret_code_t im_privacy_set(pm_privacy_params_t const * p_privacy_params)
 {
-    #if (NRF_SD_BLE_API_VERSION == 2)
+    #if (NRF_SD_BLE_API_VERSION <= 2)
 
         ret_code_t     ret;
         ble_gap_addr_t privacy_addr;
@@ -889,7 +861,7 @@ ret_code_t im_privacy_set(pm_privacy_params_t const * p_privacy_params)
 
 ret_code_t im_privacy_get(pm_privacy_params_t * p_privacy_params)
 {
-    #if (NRF_SD_BLE_API_VERSION == 2)
+    #if (NRF_SD_BLE_API_VERSION <= 2)
 
         ble_gap_addr_t cur_addr;
         ble_opt_t      cur_privacy_opt;
@@ -971,7 +943,7 @@ ret_code_t im_whitelist_set(pm_peer_id_t const * p_peers,
     {
         // Clear the current whitelist.
         m_wlisted_peer_cnt = 0;
-        #if (NRF_SD_BLE_API_VERSION == 3)
+        #if (NRF_SD_BLE_API_VERSION >= 3)
             // NRF_SUCCESS, or
             // BLE_GAP_ERROR_WHITELIST_IN_USE
             return sd_ble_gap_whitelist_set(NULL, 0);
@@ -987,7 +959,7 @@ ret_code_t im_whitelist_set(pm_peer_id_t const * p_peers,
     m_wlisted_peer_cnt = peer_cnt;
     memcpy(m_wlisted_peers, p_peers, sizeof(pm_peer_id_t) * peer_cnt);
 
-    #if (NRF_SD_BLE_API_VERSION == 3)
+    #if (NRF_SD_BLE_API_VERSION >= 3)
 
         ret_code_t ret;
         uint32_t   wlist_addr_cnt = 0;

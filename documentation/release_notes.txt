@@ -1,101 +1,148 @@
-nRF5 SDK v12.3.0
-----------------
-Release Date: Week 19, 2017
+nRF5 SDK v13.0.0-1.alpha
+------------------------
+Release Date: Week 50, 2016
+  
+This release is an alpha release and should ONLY be used for the
+following purposes:
+- Exploring and trying out the new Bluetooth 5 features available
+  with the new SoftDevices.
+- Trying out new features on the nRF52840 chip.
  
 Highlights:
- 
-The main update for this release is the Eddystone implementation for nRF51.
-In addition to this, we have included some bug fixes. Apart from this, this SDK is identical to SDK v12.2.0.
-The licenses in this SDK release have been updated in the same way as the licenses in SDK v13.0.0.
-This SDK is distributed with nRF5x MDK v8.11.1.
- 
-- Eddystone implementation upgraded from experimental to production quality.
-- Various bug fixes. See the Bugfixes section below.
- 
+- Updated the BLE ATT_MTU Throughput Example (ble_app_att_mtu_throughput)
+  to showcase a PHY data rate of 2 Ms/s and coded PHY for long-range 
+  transmission.
+- Updated the cryptography library to include a CryptoCell CC310
+  backend (API changes compared to SDK 12.2.0).
+- Updated the BLE LE Secure Connections Multirole Example
+  (ble_app_multirole_lesc) to use the CryptoCell CC310 backend of the
+  cryptography library (available only for nRF52840).
+- Added serialization of the new SoftDevices S132 v5.0.0-1.alpha and
+  S140 v5.0.0-1.alpha. Added USB CDC ACM serial as transport layer.
+- Dropped support for nRF51 Series devices.
+- Dropped support for RTX.
+  
 The following toolchains/devices have been used for testing and
 verification:
 - ARM: MDK-ARM version 5.18a
 - GCC: GCC ARM Embedded 4.9 2015q3
-- IAR: IAR Workbench 7.80.4
- 
+- IAR: IAR Workbench 7.30.4
+  
 Supported SoftDevices:
-- S130 v2.0.1
-- S132 v3.0.0
+- S140 v5.0.0-1.alpha
+- S132 v5.0.0-1.alpha
 - S212 v2.0.0
 - S332 v2.0.0
-  
+   
 Supported boards:
-- PCA10028
-- PCA10031
 - PCA10040
 - PCA10056 (limited support; see the "Scope for the nRF52840" section)
-- PCA20006 (only for beacon examples)
 - Dynastream's N5DK1 (only for ANT examples)
-  
+   
 For other devices and boards, see the SDK documentation, section "Using
 the SDK with other boards".
-  
-  
+   
+   
 *** Scope for the nRF52840 chip
 ********************************
-The PCA10056 development board is supported but all examples and libraries 
-for the new chip should be treated as experimental.
-  
+All examples and libraries for the new chip must be treated as
+experimental.
+Some examples have not been ported to run on nRF52840. Check the
+existing example projects to see which targets are supported.
+   
 The following SDK features are supported on the new nRF52840 chip:
   - Most BLE, hardware peripheral, and NFC examples (with some
     exceptions; see the available example projects for details)
   - Peripheral HAL and drivers (both for existing and new peripherals)
-  - Library supporting CC310 CryptoCell
-  - NFC Type 2 Tag and Type 4 Tag
- 
-The following SDK features are not supported on the new nRF52840 chip:
+  - Cryptography library including CryptoCell CC310 backend
+  - NFC Type 2 Tag and Type 4 Tag  
+  - Secure DFU (only with micro-ecc backend)
+  - Serialization of the SoftDevices S132 v5.0.0-1.alpha and
+    S140 v5.0.0-1.alpha with UART and USB CDC ACM transport layers
+  
+The following SDK features are not supported on the new nRF52840 chip yet:
    - ANT
-   - Secure DFU
-   - Serialization
    - DTM
    - ESB and Gazell
-   - RTX and FreeRTOS
+   - FreeRTOS
    - Eddystone
+      
+      
+*** New features
+*****************
+   
+** BLE **
+- Updated the BLE ATT_MTU Throughput Example to demonstrate the use of 
+  Bluetooth 5 features:
+    - PHY data rate of 2 Ms/s (nRF52832 and nRF52840)
+    - Coded PHY for long-range transmission (nRF52840 only)
  
+** NFC **
+- Added a layer of abstraction for NFC OOB pairing, the NFC BLE Pairing
+  Library (nfc_ble_pair_lib).
+- Added a central and a peripheral NFC BLE example that use the new NFC
+  BLE Pairing Library:
+  - Heart Rate Collector Application with NFC pairing (ble_app_hrs_nfc_c,
+    to be used with the Adafruit shield)
+  - BLE Peripheral example: Heart Rate Application with BLE pairing 
+    using NFC Pairing Library (ble_app_hrs_nfc_pairing_lib)
+   
+** Cryptography **
+- Added a backend to the cryptography library that supports the ARM 
+  CryptoCell 310 hardware-accelerated cryptography engine.
+- Updated the LE Secure Connections Multirole Example to showcase how 
+  to use the cryptography library with the CryptoCell CC310 backend 
+  (nRF52840 only).
  
-*** Overall
-***********
-- Updated the license texts across the SDK.
- 
- 
-*** Features
+** Serialization **
+- Added serialization of the new SoftDevices S132 v5.0.0-1.alpha and
+  S140 v5.0.0-1.alpha.
+- Added the transport layer USB CDC ACM (nRF52840 only).
+
+   
+*** Changes
 ************
  
-** BLE **
-- Eddystone implementation upgraded from experimental to production quality.
- 
-*** Bugfixes
-***********
 ** Drivers and libraries **
-- Fixed a bug in FDS where fds_record_update() did not set the page on which the record was stored as applicable for garbage collection.
-- Fixed a bug in FDS where optimization for size in GCC would cause a variable to not be word aligned which resulted in FDS_ERR_UNALIGNED_ADDR when attempting some flash operations.
-- Fixed a bug in FDS where updating the firmware with DFU to a firmware with different flash settings could cause a missing swap page to fail to be detected.
-- Fixed a bug in SAADC where calling nrf_saadc_int_enable() would enable the wrong interrupt.
-- Fixed a bug in SAADC where optimization in Keil would cause nrf_drv_saadc_abort() to time out.
-- Fixed a bug in SAADC where certain conditions would cause only the first convertion to succeed.
-- Fixed a bug in Peer Manager which made it possible for Peer Manager to corrupt the flash memory under certain circumstances.
-- Fixed a bug in NRF Timer where a bit width 8 would fail a validation check for Timer 1 and Timer 2.
- 
+- Refactored the RNG driver.
+    
 ** BLE **
-- Changed the device name to "Nordic_Buttonless" and enabled write property on DFU Service Control Point.
+- Fixed a bug in the Multi-link Example where disconnecting all central
+  links would disable the app_button module.
+- Fixed two bugs in the Buttonless DFU Template Application:
+  - The example now has writable set on the Control Point characteristic.
+  - The example is now using the correct part of the flash, enabling 
+    flashing when a bootloader is present.
+- Fixed a bug in the ANCS Client Application where NULL-termination of a
+  received attribute could happen outside its allocated buffer.
+- Fixed a bug in the ANCS Client Application where using RFU attribute 
+  IDs could cause illegal memory access.
+- Modified the LE Secure Connections Multirole Example to prevent 
+  creation of a second link to the same peer simultaneously.
+   
+** NFC **
+- Fixed a bug in NFC Type 2 and Type 4 Tag HAL where NFC would hang when
+  the chip was woken up from SYSTEM_OFF and HFXO was started before NFCT
+  requested it.
   
+** Serialization **
+- UART and HCI UART transports have been optimized to better utilize 
+  EasyDMA.
+ 
+
 *** Known Issues
 ****************
-  
+   
 ** Overall **
 - Updating the MDK requires to manually copy the header and linker files
   into the SDK folder (ARM Keil uVision 4, IAR Workbench, ARMGCC).
 - When uploading an application to an nRF52 IC using nrfjprog, you must
   provide the "--reset/-r" argument or powercycle the board.
-- RTX is not supported on nRF52 chips.
-  
+   
 ** BLE **
 - Some examples might have excessively verbose logging.
+- Examples that use the Peer Manager might assert when deleting bonds,
+  because advertising is started twice.
 - In the Proximity Application, writing "High Alert" to the AlertLevel
   characteristic of the Link Loss Service does not trigger a high alert
   when the link is lost.
@@ -103,15 +150,19 @@ The following SDK features are not supported on the new nRF52840 chip:
   security request with the MITM bit set. The central applications in
   the SDK will reject the security request (Pairing Failed) because
   they do not support MITM.
-  
+- Advertisement intervals in the Eddystone Beacon Application are not
+  verified. Clients must ensure that the configured advertisement 
+  interval is within the valid range. Note that EID/eTLM configurations 
+  might require advertisement intervals larger than the default value.
+   
 ** NFC **
 - NFC Type 2 and Type 4 Tag HAL modules require using TIMER4 on nRF52832.
 - Type 2 Tag on nRF52840 chips might fail unpredictably.
-- Some mobile phone apps cannot write Type 4 Tag ("NFC Tool" seems to be okay to use).
+- Some mobile phone apps cannot write Type 4 Tag ("NFC Tool" seems to 
+  be okay to use).
 
 
 ========================================================================
-
 
 nRF5 SDK v12.2.0
 ----------------
