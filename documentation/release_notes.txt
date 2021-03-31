@@ -1,3 +1,122 @@
+nRF5 SDK v13.1.0
+------------------------
+Release Date: Week 27, 2017
+
+Highlights:
+- Added support for the SoftDevice S332 v4.0.x.
+- Added serialization solution for the combined BLE and ANT SoftDevice. 
+ 
+The following toolchains/devices have been used for testing and
+verification:
+- ARM: MDK-ARM version 5.18a
+- GCC: GCC ARM Embedded 4.9 2015q3
+- IAR: IAR Workbench 7.80.4
+   
+Supported SoftDevices:
+- S132 v4.0.x
+- S140 v5.0.0-2.alpha
+- S212 v4.0.x
+- S332 v4.0.x
+    
+Supported boards:
+- PCA10040
+- PCA10056 (limited support; see the "Scope for the nRF52840 chip" section)
+- Dynastream's D52DK1 (only for ANT examples)
+    
+For other devices and boards, see the SDK documentation, section "Using
+the SDK with other boards".
+    
+    
+*** Scope for the nRF52840 chip
+********************************
+All examples and libraries for the new chip must be treated as
+experimental.
+Some examples have not been ported to run on nRF52840. Check the
+existing example projects to see which targets are supported.
+    
+The following SDK features are supported on the new nRF52840 chip:
+  - New 804.15.4 stack library with an example
+  - Most BLE, hardware peripheral, and NFC examples (with some
+    exceptions; see the available example projects for details)
+  - Peripheral HAL and drivers (both for existing and new peripherals)
+  - Cryptography library including CryptoCell CC310 backend
+  - NFC Type 2 Tag and Type 4 Tag 
+  - Secure DFU (only with micro-ecc backend)
+  - Serialization of the S140 SoftDevice v5.0.0-2.alpha with UART
+   
+The following SDK features are not supported on the new nRF52840 chip yet:
+   - ANT
+   - DTM
+   - ESB and Gazell
+   - FreeRTOS
+   - Eddystone
+       
+       
+*** New features
+*****************
+    
+** BLE **
+- Added S332 projects in Heart Rate Sensor and Heart Rate Collector examples.
+ 
+** ANT **
+- Added support the for the new SoftDevice S332 v4.0.x.
+- Added S332 examples: 'Ant Shared Channels' and 'ANT and BLE Heart Rate Monitor Relay Application'.
+- Added an S332 project for the D52DK1 Development Kit in the ANT Message Types example.
+  
+** Serialization **
+- Added a solution for serialization of combined BLE and ANT SoftDevice
+  using the ble_ant_app_hrm example as the use case.
+
+ 
+*** Changes
+************
+
+** ANT **
+- Removed the nrf_sd_def.h file. It will be now distributed just like the rest of SoftDevice header files through 
+  https://www.thisisant.com
+  
+ 
+*** Bugfixes
+*************
+ 
+** Drivers and libraries **
+- Fixed a potential overflow in watchdog timer (WDT) driver initialization.
+
+
+*** Known Issues
+*****************
+  
+** Overall **
+- Updating the MDK requires to manually copy the header and linker files
+  into the SDK folder (ARM Keil uVision 4, IAR Workbench, ARMGCC).
+- When uploading an application to an nRF52 IC using nrfjprog, you must
+  provide the "--reset/-r" argument or powercycle the board.
+
+** BLE **
+- Some examples might have excessively verbose logging.
+- Examples that use the Peer Manager might assert when deleting bonds,
+  because advertising is started twice.
+- In the Proximity Application, writing "High Alert" to the AlertLevel
+  characteristic of the Link Loss Service does not trigger a high alert
+  when the link is lost.
+- When an Android device is used as a peripheral, it sends slave
+  security request with the MITM bit set. The central applications in
+  the SDK will reject the security request (Pairing Failed) because
+  they do not support MITM.
+- Advertisement intervals in the Eddystone Beacon Application are not
+  verified. Clients must ensure that the configured advertisement
+  interval is within the valid range. Note that EID/eTLM configurations
+  might require advertisement intervals to be larger than the default value.
+  
+** NFC **
+- NFC Type 2 and Type 4 Tag HAL modules require using TIMER4 on nRF52832.
+- Type 2 Tag on nRF52840 chips might fail unpredictably.
+- Some mobile phone apps cannot write Type 4 Tag ("NFC Tool" seems to
+  be okay to use).
+
+
+========================================================================
+
 nRF5 SDK v13.0.0
 ------------------------
 Release Date: Week 11, 2017
